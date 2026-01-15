@@ -1,0 +1,39 @@
+{
+  "name": "doraemay-theme",
+  "displayName": "Doraemay",
+  "description": "Tema escuro com cores pasteis e ferramentas úteis",
+  "version": "1.0.0",
+  "publisher": "Maria Silveira - @mayasrl",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "themes": [
+      {
+        "label": "Doraemay",
+        "uiTheme": "vs-dark",
+        "path": "./themes/doraemay-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^3.0.0"
+  },
+  "dependencies": {
+    "prettier": "3.8.0"
+  }
+}
