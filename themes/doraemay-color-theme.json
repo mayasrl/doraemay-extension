@@ -91,7 +91,7 @@
     {
       "name": "Storage",
       "scope": ["storage"],
-      "settings": { "fontStyle": "regular", "foreground": "#FF79C6" }
+      "settings": { "foreground": "#FF79C6" }
     },
     {
       "name": "Constant escape sequences",
