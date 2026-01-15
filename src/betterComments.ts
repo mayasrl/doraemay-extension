@@ -1,51 +1,125 @@
 import * as vscode from 'vscode';
 
-const patterns = [
-    { regex: /\/\/\s*!\s*(.+)/g, color: '#FF3B3B' },
-    { regex: /\/\/\s*\?\s*(.+)/g, color: '#3B82F6' },
-    { regex: /\/\/\s*TODO\s*(.+)/g, color: '#FF9500' },
-    { regex: /\/\/\s*FIXME\s*(.+)/g, color: '#FF2D92' },
-    { regex: /\/\/\s*NOTE\s*(.+)/g, color: '#A855F7' },
-    { regex: /\/\/\s*HACK\s*(.+)/g, color: '#FACC15' },
-    { regex: /\/\/\s*\*\s*(.+)/g, color: '#22C55E' }
+interface Tag {
+    tag: string;
+    color: string;
+    bg: string;
+    style?: string;
+    decoration?: string;
+}
+
+const tags: Tag[] = [
+    { tag: '!', color: '#FF3B3B', bg: '#FF3B3B22', style: 'bold' },
+    { tag: '?', color: '#3B82F6', bg: '#3B82F622', style: 'italic' },
+    { tag: 'TODO', color: '#FF9500', bg: '#FF950022', style: 'bold' },
+    { tag: 'FIXME', color: '#FF2D92', bg: '#FF2D9222', style: 'bold' },
+    { tag: 'NOTE', color: '#A855F7', bg: '#A855F722', style: 'italic' },
+    { tag: 'HACK', color: '#FACC15', bg: '#FACC1522', style: 'bold' },
+    { tag: '*', color: '#22C55E', bg: '#22C55E22', style: 'bold' },
+    { tag: '//', color: '#6B7280', bg: 'transparent', decoration: 'line-through' }
 ];
 
-let decorations: vscode.TextEditorDecorationType[] = [];
+const decTypes: Map<string, vscode.TextEditorDecorationType> = new Map();
 
-function initDecorations(): void {
-    for (const p of patterns) {
+function init(): void {
+    for (const t of tags) {
         const dec = vscode.window.createTextEditorDecorationType({
-            color: p.color,
-            fontWeight: 'bold'
+            color: t.color,
+            backgroundColor: t.bg,
+            fontStyle: t.style === 'italic' ? 'italic' : 'normal',
+            fontWeight: t.style === 'bold' ? 'bold' : 'normal',
+            textDecoration: t.decoration || 'none',
+            borderRadius: '3px'
         });
-        decorations.push(dec);
+        decTypes.set(t.tag, dec);
     }
 }
 
-export function updateComments(editor: vscode.TextEditor): void {
-    const text = editor.document.getText();
+function getPatterns(lang: string): RegExp[] {
+    const p: RegExp[] = [];
     
-    for (let i = 0; i < patterns.length; i++) {
-        const decs: vscode.DecorationOptions[] = [];
-        let match;
-        
-        while ((match = patterns[i].regex.exec(text)) !== null) {
-            const start = editor.document.positionAt(match.index);
-            const end = editor.document.positionAt(match.index + match[0].length);
-            decs.push({ range: new vscode.Range(start, end) });
+    const cStyle = ['javascript', 'typescript', 'javascriptreact', 'typescriptreact',
+        'c', 'cpp', 'csharp', 'java', 'go', 'rust', 'swift', 'kotlin', 'php', 'scala', 'dart', 'vue', 'svelte'];
+    const hashStyle = ['python', 'ruby', 'perl', 'shellscript', 'bash', 'zsh', 'yaml', 'dockerfile', 'makefile', 'r', 'julia'];
+    const dashStyle = ['sql', 'lua', 'haskell'];
+    const semiStyle = ['asm', 'lisp', 'clojure', 'scheme'];
+    const htmlStyle = ['html', 'xml', 'svg', 'markdown'];
+    
+    if (cStyle.includes(lang)) {
+        p.push(/\/\/.*$/gm);
+        p.push(/\/\*[\s\S]*?\*\//gm);
+    }
+    if (hashStyle.includes(lang)) p.push(/#.*$/gm);
+    if (dashStyle.includes(lang)) p.push(/--.*$/gm);
+    if (semiStyle.includes(lang)) p.push(/;.*$/gm);
+    if (htmlStyle.includes(lang)) p.push(/<!--[\s\S]*?-->/gm);
+    
+    if (lang === 'css' || lang === 'scss' || lang === 'less') {
+        p.push(/\/\*[\s\S]*?\*\//gm);
+        if (lang === 'scss') p.push(/\/\/.*$/gm);
+    }
+    
+    return p;
+}
+
+function findTag(comment: string): Tag | null {
+    const clean = comment
+        .replace(/^\/\/\s*/, '').replace(/^\/\*\s*/, '').replace(/\s*\*\/$/, '')
+        .replace(/^#\s*/, '').replace(/^--\s*/, '').replace(/^;\s*/, '')
+        .replace(/^<!--\s*/, '').replace(/\s*-->$/, '').trim();
+    
+    for (const t of tags) {
+        if (t.tag === '//') {
+            if (clean.startsWith('//')) return t;
+        } else if (t.tag === '!' || t.tag === '?' || t.tag === '*') {
+            if (clean.startsWith(t.tag)) return t;
+        } else {
+            if (new RegExp(`^${t.tag}\\b`, 'i').test(clean)) return t;
         }
-        
-        editor.setDecorations(decorations[i], decs);
+    }
+    return null;
+}
+
+export function updateBetterCommentsDecorations(editor: vscode.TextEditor): void {
+    const cfg = vscode.workspace.getConfiguration('doraemay.betterComments');
+    if (!cfg.get('enable', true)) {
+        clearDecorations(editor);
+        return;
+    }
+    
+    if (decTypes.size === 0) init();
+    
+    const text = editor.document.getText();
+    const lang = editor.document.languageId;
+    const patterns = getPatterns(lang);
+    
+    const decsMap: Map<string, vscode.DecorationOptions[]> = new Map();
+    for (const t of tags) decsMap.set(t.tag, []);
+    
+    for (const pattern of patterns) {
+        let m;
+        const re = new RegExp(pattern.source, pattern.flags);
+        while ((m = re.exec(text)) !== null) {
+            const t = findTag(m[0]);
+            if (t) {
+                const start = editor.document.positionAt(m.index);
+                const end = editor.document.positionAt(m.index + m[0].length);
+                decsMap.get(t.tag)!.push({ range: new vscode.Range(start, end) });
+            }
+        }
+    }
+    
+    for (const [tag, decs] of decsMap) {
+        const dec = decTypes.get(tag);
+        if (dec) editor.setDecorations(dec, decs);
     }
 }
 
-export function dispose(): void {
-    for (const dec of decorations) {
-        dec.dispose();
-    }
-    decorations = [];
+export function clearDecorations(editor: vscode.TextEditor): void {
+    for (const dec of decTypes.values()) editor.setDecorations(dec, []);
 }
 
-export function init(): void {
-    initDecorations();
+export function disposeDecorations(): void {
+    for (const dec of decTypes.values()) dec.dispose();
+    decTypes.clear();
 }
