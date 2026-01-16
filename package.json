@@ -3,7 +3,7 @@
   "displayName": "Doraemay",
   "description": "Tema escuro com cores pasteis e ferramentas úteis",
   "version": "1.0.0",
-  "publisher": "Maria Silveira - @mayasrl",
+  "publisher": "mayasrl",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -32,8 +32,5 @@
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.74.0",
     "typescript": "^3.0.0"
-  },
-  "dependencies": {
-    "prettier": "3.8.0"
   }
 }
