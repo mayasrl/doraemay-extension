@@ -3,19 +3,19 @@
   "type": "dark",
   "colors": {
     "editor.background": "#1e1e2e",
-    "editor.foreground": "#cdd6f4",
+    "editor.foreground": "#abb2bf",
     "sideBar.background": "#181825",
-    "sideBar.foreground": "#cdd6f4",
+    "sideBar.foreground": "#abb2bf",
     "activityBar.background": "#11111b",
-    "activityBar.foreground": "#cdd6f4",
+    "activityBar.foreground": "#abb2bf",
     "titleBar.activeBackground": "#181825",
-    "titleBar.activeForeground": "#cdd6f4",
+    "titleBar.activeForeground": "#abb2bf",
     "statusBar.background": "#11111b",
-    "statusBar.foreground": "#cdd6f4",
+    "statusBar.foreground": "#abb2bf",
     "tab.activeBackground": "#1e1e2e",
     "tab.inactiveBackground": "#181825",
     "editorGroupHeader.tabsBackground": "#181825",
-    "terminal.background": "#11111b",
+    "terminal.background": "#1e1e2e",
     "terminal.foreground": "#abb2bf",
     "terminal.ansiBlack": "#373738",
     "terminal.ansiRed": "#e06c75",
@@ -34,7 +34,7 @@
     "terminal.ansiBrightCyan": "#56b6c2",
     "terminal.ansiBrightWhite": "#ffffff"
   },
-"tokenColors": [
+  "tokenColors": [
     {
       "name": "Comments",
       "scope": ["comment", "punctuation.definition.comment"],
@@ -42,7 +42,7 @@
     },
     {
       "name": "Keywords",
-      "scope": ["keyword", "punctuation.definition.keyword"],
+      "scope": ["keyword", "punctuation.definition.keyword", "storage.modifier", "storage.type"],
       "settings": { "foreground": "#c678dd" }
     },
     {
@@ -58,7 +58,7 @@
     {
       "name": "User-defined class names",
       "scope": ["entity.name.type.class", "entity.name.class"],
-      "settings": { "foreground": "#c678dd" }
+      "settings": { "foreground": "#d19a66" }
     },
     {
       "name": "Language Built-ins",
@@ -88,12 +88,12 @@
     {
       "name": "Variables and object properties",
       "scope": ["variable", "support.variable.property"],
-      "settings": { "foreground": "#abb2bf" }
+      "settings": { "foreground": "#e06c75" }
     },
     {
       "name": "Brackets, braces, parens",
-      "scope": ["meta.brace.round", "punctuation.definition.arguments.begin", "punctuation.definition.arguments.end"],
-      "settings": { "foreground": "#abb2bf" }
+      "scope": ["meta.brace.round", "meta.brace.square", "meta.brace.curly", "punctuation.definition.arguments.begin", "punctuation.definition.arguments.end", "punctuation.definition.block.begin", "punctuation.definition.block.end"],
+      "settings": { "foreground": "#5c6370" }
     },
     {
       "name": "Separators",
