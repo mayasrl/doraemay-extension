@@ -15,7 +15,24 @@
     "tab.activeBackground": "#1e1e2e",
     "tab.inactiveBackground": "#181825",
     "editorGroupHeader.tabsBackground": "#181825",
-    "terminal.background": "#11111b"
+    "terminal.background": "#11111b",
+    "terminal.foreground": "#abb2bf",
+    "terminal.ansiBlack": "#373738",
+    "terminal.ansiRed": "#e06c75",
+    "terminal.ansiGreen": "#98c379",
+    "terminal.ansiYellow": "#d19a66",
+    "terminal.ansiBlue": "#61afef",
+    "terminal.ansiMagenta": "#c678dd",
+    "terminal.ansiCyan": "#56b6c2",
+    "terminal.ansiWhite": "#abb2bf",
+    "terminal.ansiBrightBlack": "#5c6370",
+    "terminal.ansiBrightRed": "#e06c75",
+    "terminal.ansiBrightGreen": "#98c379",
+    "terminal.ansiBrightYellow": "#d19a66",
+    "terminal.ansiBrightBlue": "#61afef",
+    "terminal.ansiBrightMagenta": "#c678dd",
+    "terminal.ansiBrightCyan": "#56b6c2",
+    "terminal.ansiBrightWhite": "#ffffff"
   },
 "tokenColors": [
     {
@@ -26,77 +43,77 @@
     {
       "name": "Keywords",
       "scope": ["keyword", "punctuation.definition.keyword"],
-      "settings": { "foreground": "#FF79C6" }
+      "settings": { "foreground": "#c678dd" }
     },
     {
       "name": "Function names",
       "scope": ["entity.name.function", "meta.function-call"],
-      "settings": { "foreground": "#67e480" }
+      "settings": { "foreground": "#98c379" }
     },
     {
       "name": "Strings",
       "scope": ["string", "string.quoted"],
-      "settings": { "foreground": "#e7de79" }
+      "settings": { "foreground": "#98c379" }
     },
     {
       "name": "User-defined class names",
       "scope": ["entity.name.type.class", "entity.name.class"],
-      "settings": { "foreground": "#988bc7" }
+      "settings": { "foreground": "#c678dd" }
     },
     {
       "name": "Language Built-ins",
       "scope": ["support"],
-      "settings": { "fontStyle": "italic", "foreground": "#78D1E1" }
+      "settings": { "fontStyle": "italic", "foreground": "#61afef" }
     },
     {
       "name": "Constants",
       "scope": ["constant", "variable.other.constant"],
-      "settings": { "foreground": "#988bc7" }
+      "settings": { "foreground": "#d19a66" }
     },
     {
       "name": "HTML tags",
       "scope": ["entity.name.tag"],
-      "settings": { "foreground": "#FF79C6" }
+      "settings": { "foreground": "#e06c75" }
     },
     {
       "name": "HTML/CSS attribute names",
       "scope": ["entity.other.attribute-name"],
-      "settings": { "foreground": "#67e480", "fontStyle": "italic" }
+      "settings": { "foreground": "#98c379", "fontStyle": "italic" }
     },
     {
       "name": "Function parameters",
       "scope": ["entity.name.variable.parameter", "variable.parameter"],
-      "settings": { "fontStyle": "italic", "foreground": "#E89E64" }
+      "settings": { "fontStyle": "italic", "foreground": "#d19a66" }
     },
     {
       "name": "Variables and object properties",
       "scope": ["variable", "support.variable.property"],
-      "settings": { "foreground": "#E1E1E6" }
+      "settings": { "foreground": "#abb2bf" }
     },
     {
       "name": "Brackets, braces, parens",
       "scope": ["meta.brace.round", "punctuation.definition.arguments.begin", "punctuation.definition.arguments.end"],
-      "settings": { "foreground": "#E1E1E6" }
+      "settings": { "foreground": "#abb2bf" }
     },
     {
       "name": "Separators",
       "scope": ["punctuation.separator.key-value", "punctuation.separator.namespace"],
-      "settings": { "foreground": "#FF79C6" }
+      "settings": { "foreground": "#e06c75" }
     },
     {
       "name": "this, super, self, etc.",
       "scope": ["keyword.other.this", "variable.language"],
-      "settings": { "foreground": "#78D1E1", "fontStyle": "italic" }
+      "settings": { "foreground": "#56b6c2", "fontStyle": "italic" }
     },
     {
       "name": "Storage",
       "scope": ["storage"],
-      "settings": { "foreground": "#FF79C6" }
+      "settings": { "foreground": "#c678dd" }
     },
     {
       "name": "Constant escape sequences",
       "scope": ["constant.character.escape", "constant.regexp"],
-      "settings": { "foreground": "#FF79C6" }
+      "settings": { "foreground": "#e06c75" }
     }
   ]
 }
