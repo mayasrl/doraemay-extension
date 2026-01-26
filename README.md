@@ -129,4 +129,6 @@ MIT License
 
 ---
 
-Desenvolvido com 💛 por **@mayasrl**.
+<p align="center">
+  Desenvolvido com 💛 por <strong>@mayasrl</strong>.
+</p>
