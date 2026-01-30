@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as colorHighlight from './colorHighlight';
 import * as betterComments from './betterComments';
 import * as indentRainbow from './indentRainbow';
+import * as csvHighlight from './csvHighlight';
 
 let timeout: NodeJS.Timeout | undefined;
 
@@ -9,6 +10,7 @@ export function activate(context: vscode.ExtensionContext): void {
     console.log('Doraemay ativo');
     
     indentRainbow.setupIndentRainbow(context);
+    csvHighlight.setupCSVHighlight(context);
     
     if (vscode.window.activeTextEditor) {
         triggerUpdate(vscode.window.activeTextEditor);
@@ -36,6 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (editor) {
                     colorHighlight.disposeDecorations();
                     betterComments.disposeDecorations();
+                    csvHighlight.disposeDecorations();
                     triggerUpdate(editor);
                 }
             }
@@ -70,6 +73,15 @@ export function activate(context: vscode.ExtensionContext): void {
     );
     
     context.subscriptions.push(
+        vscode.commands.registerCommand('doraemay.toggleCSVHighlight', async () => {
+            const cfg = vscode.workspace.getConfiguration('doraemay.csvHighlight');
+            const val = cfg.get('enable', true);
+            await cfg.update('enable', !val, vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage(`CSV Highlight ${!val ? 'on' : 'off'}`);
+        })
+    );
+    
+    context.subscriptions.push(
         vscode.commands.registerCommand('doraemay.showInfo', () => {
             vscode.window.showInformationMessage('Doraemay v1.0.0 by @mayasrs');
         })
@@ -85,10 +97,12 @@ function updateDecorations(editor: vscode.TextEditor): void {
     colorHighlight.updateColorDecorations(editor);
     betterComments.updateBetterCommentsDecorations(editor);
     indentRainbow.updateIndentDecorations(editor);
+    csvHighlight.updateCSVDecorations(editor);
 }
 
 export function deactivate(): void {
     if (timeout) clearTimeout(timeout);
     colorHighlight.disposeDecorations();
     betterComments.disposeDecorations();
+    csvHighlight.disposeDecorations();
 }
