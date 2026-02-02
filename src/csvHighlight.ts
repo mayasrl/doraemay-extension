@@ -26,9 +26,12 @@ export function setupCSVHighlight(context: vscode.ExtensionContext): void {
 export function updateCSVDecorations(editor: vscode.TextEditor): void {
   const fileName = editor.document.fileName;
   
-  // Verificar se é um arquivo CSV
-  if (!fileName.endsWith('.csv')) {
-    // Limpar decorações se não for CSV
+  // Verificar se é um arquivo com extensão suportada
+  const supportedExtensions = ['.csv', '.tsv', '.psv', '.ssv', '.txt'];
+  const isSupportedFile = supportedExtensions.some(ext => fileName.endsWith(ext));
+  
+  if (!isSupportedFile) {
+    // Limpar decorações se não for arquivo suportado
     for (let i = 0; i < csvDecorationTypes.length; i++) {
       editor.setDecorations(csvDecorationTypes[i], []);
     }
@@ -47,6 +50,9 @@ export function updateCSVDecorations(editor: vscode.TextEditor): void {
   const text = editor.document.getText();
   const lines = text.split('\n');
 
+  // Detectar o separador da primeira linha
+  const separator = detectSeparator(lines[0] || '');
+
   // Inicializar array de decorações para cada coluna
   const decorations: vscode.Range[][] = [];
   for (let i = 0; i < COLUMN_COLORS.length; i++) {
@@ -57,13 +63,13 @@ export function updateCSVDecorations(editor: vscode.TextEditor): void {
   lines.forEach((line, lineIndex) => {
     if (!line.trim()) return;
 
-    const fields = parseCSVLine(line);
+    const fields = parseDelimitedLine(line, separator);
     
     fields.forEach((field, columnIndex) => {
       const colorIndex = columnIndex % COLUMN_COLORS.length;
       
       // Encontrar a posição do campo na linha
-      const fieldStart = findFieldPosition(line, columnIndex, fields);
+      const fieldStart = findFieldPosition(line, columnIndex, fields, separator);
       const fieldEnd = fieldStart + field.length;
 
       if (fieldStart >= 0 && fieldEnd > fieldStart) {
@@ -84,7 +90,34 @@ export function updateCSVDecorations(editor: vscode.TextEditor): void {
   }
 }
 
-function parseCSVLine(line: string): string[] {
+function detectSeparator(line: string): string {
+  // Contar ocorrências de cada separador
+  const separators = [',', ';', ':', '|', '\t'];
+  let maxCount = 0;
+  let detectedSeparator = ','; // Padrão
+
+  for (const sep of separators) {
+    let count = 0;
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') {
+        inQuotes = !inQuotes;
+      } else if (line[i] === sep && !inQuotes) {
+        count++;
+      }
+    }
+
+    if (count > maxCount) {
+      maxCount = count;
+      detectedSeparator = sep;
+    }
+  }
+
+  return detectedSeparator;
+}
+
+function parseDelimitedLine(line: string, separator: string): string[] {
   const fields: string[] = [];
   let currentField = '';
   let inQuotes = false;
@@ -102,7 +135,7 @@ function parseCSVLine(line: string): string[] {
         inQuotes = !inQuotes;
         currentField += char;
       }
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === separator && !inQuotes) {
       // Field separator
       fields.push(currentField);
       currentField = '';
@@ -112,14 +145,14 @@ function parseCSVLine(line: string): string[] {
   }
 
   // Adicionar último campo
-  if (currentField || line.endsWith(',')) {
+  if (currentField || line.endsWith(separator)) {
     fields.push(currentField);
   }
 
   return fields;
 }
 
-function findFieldPosition(line: string, fieldIndex: number, fields: string[]): number {
+function findFieldPosition(line: string, fieldIndex: number, fields: string[], separator: string): number {
   let currentField = 0;
   let currentPos = 0;
   let inQuotes = false;
@@ -133,7 +166,7 @@ function findFieldPosition(line: string, fieldIndex: number, fields: string[]): 
       } else {
         inQuotes = !inQuotes;
       }
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === separator && !inQuotes) {
       currentField++;
       currentPos = i + 1;
       
